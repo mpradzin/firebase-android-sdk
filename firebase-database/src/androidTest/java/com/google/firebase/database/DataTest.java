@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.google.firebase.database.core.DatabaseConfig;
 import com.google.firebase.database.core.Path;
@@ -202,13 +203,13 @@ public class DataTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     assertNull(snapshot.getValue());
                     assertEquals(1, bbCount.incrementAndGet());
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
     EventHelper helper =
@@ -646,13 +647,13 @@ public class DataTest {
     reader.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals(null, snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Shouldn't happen");
           }
         });
@@ -663,13 +664,13 @@ public class DataTest {
     reader2.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals(42L, snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Shouldn't happen");
           }
         });
@@ -1581,13 +1582,13 @@ public class DataTest {
     ref1.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertNull(snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         });
@@ -1598,13 +1599,13 @@ public class DataTest {
     ref1.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals(5L, snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         });
@@ -1616,13 +1617,13 @@ public class DataTest {
     ref1.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals(42L, snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         });
@@ -1645,7 +1646,7 @@ public class DataTest {
         ref1.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (hasRun.compareAndSet(false, true)) {
                   assertNull(snapshot.getValue());
                   semaphore.release(1);
@@ -1653,7 +1654,7 @@ public class DataTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 fail("Should not fail");
               }
             });
@@ -1666,13 +1667,13 @@ public class DataTest {
     ref1.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals("test", snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not fail");
           }
         });
@@ -1682,13 +1683,13 @@ public class DataTest {
     ref2.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals("test", snapshot.getValue());
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not fail");
           }
         });
@@ -1790,14 +1791,14 @@ public class DataTest {
     ref.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (DeepEquals.deepEquals(snapshot.getValue(), expected)) {
               semaphore.release();
             }
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
     ref.setValue(42);
     ref.updateChildren(expected);
@@ -2205,7 +2206,7 @@ public class DataTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     Object val = snapshot.getValue();
                     boolean inited = initialized.get();
                     if (val == null && inited) {
@@ -2217,7 +2218,7 @@ public class DataTest {
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
     writer.child(childName).setValue("foo");
     // Make sure we get the data in the listener before we delete it
@@ -2255,13 +2256,13 @@ public class DataTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     assertNull(snapshot.getValue());
                     assertTrue(queryCalled.compareAndSet(false, true));
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     fail("Should not be cancelled");
                   }
                 });
@@ -2273,13 +2274,13 @@ public class DataTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     assertNull(snapshot.getValue());
                     assertTrue(deepChildCalled.compareAndSet(false, true));
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     fail("Should not be cancelled");
                   }
                 });
@@ -2781,13 +2782,13 @@ public class DataTest {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 foundValues.add(snapshot.getValue());
                 latch.arrive();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     try {
@@ -2862,13 +2863,13 @@ public class DataTest {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 foundPriorities.add(snapshot.getPriority());
                 latch.arrive();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     try {
@@ -2914,13 +2915,13 @@ public class DataTest {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 foundValues.add(snapshot.getValue());
                 latch.arrive();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     try {
@@ -2985,7 +2986,7 @@ public class DataTest {
             ref.addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     Map res = (Map) snapshot.getValue();
                     if (res.size() == 3
                         && res.containsKey("a")
@@ -2996,7 +2997,7 @@ public class DataTest {
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
             ref.child("b").setValue("b");
@@ -3052,7 +3053,7 @@ public class DataTest {
             ref2.addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     assertFalse(gotData.tryAcquire());
                     gotData.release();
 
@@ -3060,7 +3061,7 @@ public class DataTest {
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
           }
         });
@@ -3079,7 +3080,7 @@ public class DataTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((Boolean) snapshot.getValue()) {
                   // We're connected.  Do one more round-trip to make sure all state restoration is
                   // done
@@ -3098,7 +3099,7 @@ public class DataTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     IntegrationTestHelpers.waitFor(done);
@@ -3137,7 +3138,7 @@ public class DataTest {
                 .addValueEventListener(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         assertFalse(gotData.tryAcquire());
                         gotData.release();
 
@@ -3145,7 +3146,7 @@ public class DataTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -3164,7 +3165,7 @@ public class DataTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((Boolean) snapshot.getValue()) {
                   // We're connected.  Do one more round-trip to make sure all state restoration is
                   // done.
@@ -3183,7 +3184,7 @@ public class DataTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     IntegrationTestHelpers.waitFor(done);
@@ -3213,13 +3214,13 @@ public class DataTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 readSnapshots.add(snapshot);
                 readSemaphore.release();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     IntegrationTestHelpers.waitFor(readSemaphore);
@@ -3271,10 +3272,10 @@ public class DataTest {
     reader.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
 
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (snapshot.getValue() != null) {
               readSnaps.add(snapshot);
               completionSemaphore.release();
@@ -3285,10 +3286,10 @@ public class DataTest {
     writer.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
 
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (snapshot.getValue() != null) {
               if (snapshot.getValue() != null) {
                 writeSnaps.add(snapshot);
@@ -3339,7 +3340,7 @@ public class DataTest {
     ref.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             DumbBean bean = snapshot.getValue(DumbBean.class);
             assertEquals("bean", bean.name);
             assertEquals("nested-bean", bean.nestedBean.name);
@@ -3348,7 +3349,7 @@ public class DataTest {
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     IntegrationTestHelpers.waitFor(done);
@@ -3381,7 +3382,7 @@ public class DataTest {
     ref.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             Map<String, DumbBean> beans =
                 snapshot.getValue(new GenericTypeIndicator<Map<String, DumbBean>>() {});
             assertEquals("bean1", beans.get("bean1").name);
@@ -3390,7 +3391,7 @@ public class DataTest {
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     IntegrationTestHelpers.waitFor(done);
@@ -3423,14 +3424,14 @@ public class DataTest {
     ref.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertEquals("bean1", snapshot.child("bean1").getValue(DumbBean.class).name);
             assertEquals("bean2", snapshot.child("deep/bean2").getValue(DumbBean.class).name);
             done.release();
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     IntegrationTestHelpers.waitFor(done);

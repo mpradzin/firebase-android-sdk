@@ -14,6 +14,8 @@
 
 package com.google.firebase.database;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -193,12 +195,12 @@ public class PerformanceBenchmarks {
     ValueEventListener valueListener =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             semaphore.release();
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         };
 
     ref.addValueEventListener(valueListener);

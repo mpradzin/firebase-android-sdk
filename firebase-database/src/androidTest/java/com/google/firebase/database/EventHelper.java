@@ -14,6 +14,8 @@
 
 package com.google.firebase.database;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.core.view.Event;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -168,7 +170,7 @@ class EventHelper {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 recordEvent(new EventRecord(snapshot, Event.EventType.VALUE, null));
                 if (uninitializedRefs.remove(ref)) {
                   initializationSemaphore.release(1);
@@ -177,7 +179,7 @@ class EventHelper {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 // No-op
               }
             }));

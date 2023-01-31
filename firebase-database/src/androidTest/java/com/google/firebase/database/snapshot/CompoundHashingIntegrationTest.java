@@ -146,7 +146,7 @@ public class CompoundHashingIntegrationTest {
     return node;
   }
 
-  private void oneRound() throws Throwable {
+  private void oneRound() {
     final Node initialState = randomNode(random.nextInt(5000));
     Node currentState = initialState;
     SynchronousConnection conn = new SynchronousConnection(IntegrationTestValues.getDatabaseUrl());

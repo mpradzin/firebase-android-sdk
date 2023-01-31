@@ -14,6 +14,7 @@
 
 package com.google.firebase.database.integration;
 
+import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -46,7 +47,7 @@ public class ShutdownExample {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     Boolean shouldShutdown = snapshot.getValue(Boolean.class);
                     if (shouldShutdown != null && shouldShutdown) {
                       System.out.println("Should shut down");
@@ -57,7 +58,7 @@ public class ShutdownExample {
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     System.err.println("Shouldn't happen");
                   }
                 });

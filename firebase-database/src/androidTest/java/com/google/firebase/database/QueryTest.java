@@ -459,12 +459,12 @@ public class QueryTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     semaphore.release();
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
     ref.setValue(new MapBuilder().put("a", 5).put("b", 6).build());
@@ -487,12 +487,12 @@ public class QueryTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     semaphore.release();
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
     ref.setValue(new MapBuilder().put("a", 5).put("b", 6).build());
@@ -2007,12 +2007,12 @@ public class QueryTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     // No-op
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
     assertNotNull(listener);
@@ -2113,12 +2113,12 @@ public class QueryTest {
   private ValueEventListener dummyListener() {
     return new ValueEventListener() {
       @Override
-      public void onDataChange(DataSnapshot snapshot) {
+      public void onDataChange(@NonNull DataSnapshot snapshot) {
         // No-op
       }
 
       @Override
-      public void onCancelled(DatabaseError error) {
+      public void onCancelled(@NonNull DatabaseError error) {
         fail("Should not be cancelled");
       }
     };
@@ -2339,14 +2339,14 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map expected = new MapBuilder().put("a", "blah").build();
                         DeepEquals.assertEquals(expected, snapshot.getValue(true));
                         semaphore.release();
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -2486,12 +2486,12 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 childSnaps.add(snapshot);
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     new WriteFuture(ref, new MapBuilder().put("a", 1).put("b", 2).build()).timedGet();
@@ -2527,12 +2527,12 @@ public class QueryTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     childSnaps.add(snapshot);
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     fail("Should not be cancelled");
                   }
                 });
@@ -2576,14 +2576,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
                   cSnaps.add(snapshot);
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     ref.endAt(null, "d")
@@ -2591,14 +2591,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
                   dSnaps.add(snapshot);
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     new WriteFuture(ref, new MapBuilder().put("a", 1).put("b", 2).put("c", 3).build()).timedGet();
@@ -2816,14 +2816,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Should only be called once
                 assertTrue(limit2Called.compareAndSet(false, true));
                 semaphore.release(1);
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     // Skipping nested calls, no re-entrant APIs in Java
@@ -2859,14 +2859,14 @@ public class QueryTest {
     ref.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             // Should only be called once
             assertTrue(onCalled.compareAndSet(false, true));
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     waitFor(semaphore);
@@ -2890,14 +2890,14 @@ public class QueryTest {
     ref.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             // Should only be called once
             assertTrue(onCalled.compareAndSet(false, true));
             semaphore.release(1);
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     DataSnapshot snap = IntegrationTestHelpers.getSnap(ref.limitToLast(5));
@@ -3160,14 +3160,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (loaded.compareAndSet(false, true)) {
                   semaphore.release(1);
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     // Wait for the read to be initialized
@@ -3246,14 +3246,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (loaded.compareAndSet(false, true)) {
                   semaphore.release(1);
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     // Wait for the read to be initialized
@@ -3329,14 +3329,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (loaded.compareAndSet(false, true)) {
                   semaphore.release(1);
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     // Wait for the read to be initialized
@@ -3410,14 +3410,14 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (loaded.compareAndSet(false, true)) {
                   semaphore.release(1);
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     // Wait for the read to be initialized
@@ -3828,13 +3828,13 @@ public class QueryTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 assertTrue(childCalled.compareAndSet(false, true));
                 assertEquals(1L, snapshot.getValue());
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     new ReadFuture(
@@ -3920,7 +3920,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> expected =
                             new MapBuilder()
                                 .put("80", true)
@@ -3932,7 +3932,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -3963,7 +3963,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> expected =
                             new MapBuilder().put("550", true).put("600", true).build();
                         DeepEquals.assertEquals(expected, snapshot.getValue());
@@ -3971,7 +3971,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4002,7 +4002,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> expected =
                             new MapBuilder().put("1", true).put("6", true).put("8", true).build();
                         DeepEquals.assertEquals(expected, snapshot.getValue());
@@ -4010,7 +4010,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4043,14 +4043,14 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         DeepEquals.assertEquals(
                             new MapBuilder().put("a", true).build(), snapshot.getValue());
                         done.release();
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4082,13 +4082,13 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         DeepEquals.assertEquals(null, snapshot.getValue());
                         done.release();
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4121,7 +4121,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         DeepEquals.assertEquals(
                             snapshot.getValue(),
                             new MapBuilder()
@@ -4139,7 +4139,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4170,7 +4170,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> expected =
                             new MapBuilder()
                                 .put("1", true)
@@ -4183,7 +4183,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4215,7 +4215,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> expected =
                             new MapBuilder()
                                 .put("50", true)
@@ -4227,7 +4227,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4259,7 +4259,7 @@ public class QueryTest {
                 .addListenerForSingleValueEvent(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         Map<String, Object> expected =
                             new MapBuilder().put("70", true).put("80", true).build();
                         DeepEquals.assertEquals(expected, snapshot.getValue());
@@ -4267,7 +4267,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -4293,7 +4293,7 @@ public class QueryTest {
     query.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (loaded.compareAndSet(false, true)) {
               assertEquals(2, snapshot.getChildrenCount());
               assertTrue(snapshot.hasChild("b"));
@@ -4305,7 +4305,7 @@ public class QueryTest {
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     waitFor(ready);
@@ -4400,13 +4400,13 @@ public class QueryTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     snapshotHolder[0] = snapshot;
                     semaphore.release();
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     Assert.fail("Unexpected error: " + error);
                   }
                 });
@@ -4500,7 +4500,7 @@ public class QueryTest {
                 .addValueEventListener(
                     new ValueEventListener() {
                       @Override
-                      public void onDataChange(DataSnapshot snapshot) {
+                      public void onDataChange(@NonNull DataSnapshot snapshot) {
                         readSnaps.add(snapshot);
                         if (readSnaps.size() == 1) {
                           DeepEquals.assertEquals(data, snapshot.getValue());
@@ -4514,7 +4514,7 @@ public class QueryTest {
                       }
 
                       @Override
-                      public void onCancelled(DatabaseError error) {}
+                      public void onCancelled(@NonNull DatabaseError error) {}
                     });
           }
         });
@@ -5137,7 +5137,7 @@ public class QueryTest {
         .addListenerForSingleValueEvent(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<String> expectedKeys = new ArrayList<String>();
                 expectedKeys.add("thisvaluefirst");
                 expectedKeys.add("name");
@@ -5170,7 +5170,7 @@ public class QueryTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
     waitFor(semaphore);
   }
@@ -5192,12 +5192,12 @@ public class QueryTest {
     ValueEventListener dummyListen =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             semaphore.release();
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         };
 
     ref.child("child").setValue(IntegrationTestHelpers.fromJsonString("{\"name\": \"John\"}"));

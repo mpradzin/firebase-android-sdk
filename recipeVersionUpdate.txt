@@ -1,0 +1,76 @@
+<!DOCTYPE root [
+  <!-- Common Firebase dependencies -->
+  <!-- Google Services Plugin-->
+  <!ENTITY google-services-plugin-class "com.google.gms:google-services:4.3.14">
+  <!ENTITY google-services-plugin "com.google.gms.google-services">
+  <!ENTITY gradle-plugin-class "com.android.tools.build:gradle:3.4.0">
+
+  <!-- Firebase SDK libraries -->
+  <!-- Analytics-->
+  <!ENTITY analytics-dependency "com.google.firebase:firebase-analytics:21.2.0">
+  <!-- Analytics KTX-->
+  <!ENTITY analytics-ktx-dependency "com.google.firebase:firebase-analytics-ktx:21.2.0">
+  <!-- Crashlytics-->
+  <!ENTITY crashlytics-dependency "com.google.firebase:firebase-crashlytics:18.3.2">
+  <!-- Crashlytics KTX-->
+  <!ENTITY crashlytics-ktx-dependency "com.google.firebase:firebase-crashlytics-ktx:18.3.2">
+  <!-- Performance Monitoring-->
+  <!ENTITY perf-dependency "com.google.firebase:firebase-perf:20.3.0">
+  <!-- Performance Monitoring KTX-->
+  <!ENTITY perf-ktx-dependency "com.google.firebase:firebase-perf-ktx:20.3.0">
+  <!-- Cloud Messaging-->
+  <!ENTITY messaging-dependency "com.google.firebase:firebase-messaging:23.1.1">
+  <!-- Cloud Messaging KTX-->
+  <!ENTITY messaging-ktx-dependency "com.google.firebase:firebase-messaging-ktx:23.1.1">
+  <!-- Authentication-->
+  <!ENTITY auth-dependency "com.google.firebase:firebase-auth:21.1.0">
+  <!-- Authentication KTX-->
+  <!ENTITY auth-ktx-dependency "com.google.firebase:firebase-auth-ktx:21.1.0">
+  <!-- Realtime Database-->
+  <!ENTITY database-dependency "com.google.firebase:firebase-database:20.1.0">
+  <!-- Realtime Database KTX-->
+  <!ENTITY database-ktx-dependency "com.google.firebase:firebase-database-ktx:20.1.0">
+  <!-- Cloud Storage-->
+  <!ENTITY storage-dependency "com.google.firebase:firebase-storage:20.1.0">
+  <!-- Cloud Storage KTX-->
+  <!ENTITY storage-ktx-dependency "com.google.firebase:firebase-storage-ktx:20.1.0">
+  <!-- Remote Config-->
+  <!ENTITY remote-config-dependency "com.google.firebase:firebase-config:21.2.0">
+  <!-- Remote Config KTX-->
+  <!ENTITY remote-config-ktx-dependency "com.google.firebase:firebase-config-ktx:21.2.0">
+  <!-- Admob-->
+  <!ENTITY ads-dependency "com.google.android.gms:play-services-ads:21.4.0">
+  <!-- Cloud Firestore-->
+  <!ENTITY firestore-dependency "com.google.firebase:firebase-firestore:24.4.1">
+  <!-- Cloud Firestore KTX-->
+  <!ENTITY firestore-ktx-dependency "com.google.firebase:firebase-firestore-ktx:24.4.1">
+  <!-- Firebase Functions-->
+  <!ENTITY functions-dependency "com.google.firebase:firebase-functions:20.2.1">
+  <!-- Firebase Functions KTX-->
+  <!ENTITY functions-ktx-dependency "com.google.firebase:firebase-functions-ktx:20.2.1">
+  <!-- Firebase Dynamic Links-->
+  <!ENTITY fdl-dependency "com.google.firebase:firebase-dynamic-links:21.1.0">
+  <!-- Firebase Dynamic Links KTX-->
+  <!ENTITY fdl-ktx-dependency "com.google.firebase:firebase-dynamic-links-ktx:21.1.0">
+  <!-- FIAM Display-->
+  <!ENTITY fiamd-dependency "com.google.firebase:firebase-inappmessaging-display:20.2.0">
+  <!-- FIAM Display KTX-->
+  <!ENTITY fiamd-ktx-dependency "com.google.firebase:firebase-inappmessaging-display-ktx:20.2.0">
+  <!-- Firebase MLKit Vision-->
+  <!ENTITY ml-vision-dependency "com.google.firebase:firebase-ml-vision:24.1.0">
+
+  <!-- Firebase Gradle plugins -->
+  <!-- App Distribution-->
+  <!ENTITY appdistribution-plugin-class "com.google.firebase:firebase-appdistribution-gradle:3.1.1">
+  <!ENTITY appdistribution-plugin "com.google.firebase.appdistribution">
+
+  <!-- Crashlytics-->
+  <!ENTITY crashlytics-plugin-class "com.google.firebase:firebase-crashlytics-gradle:2.9.2">
+  <!ENTITY crashlytics-plugin "com.google.firebase.crashlytics">
+
+  <!-- Performance Monitoring -->
+  <!-- Perf Plugin-->
+  <!ENTITY perf-plugin-class "com.google.firebase:perf-plugin:1.4.2">
+  <!ENTITY perf-plugin "com.google.firebase.firebase-perf">
+]>
+

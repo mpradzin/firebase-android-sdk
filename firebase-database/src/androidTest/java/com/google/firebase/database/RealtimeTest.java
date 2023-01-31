@@ -22,6 +22,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.google.firebase.database.core.DatabaseConfig;
 import com.google.firebase.database.core.RepoManager;
@@ -922,7 +923,7 @@ public class RealtimeTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Boolean connected = snapshot.getValue(Boolean.class);
                 if (connected) {
                   ready.release(1);
@@ -930,7 +931,7 @@ public class RealtimeTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     // Wait for us to be connected so we send the buffered put
@@ -958,13 +959,13 @@ public class RealtimeTest {
     ref.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             Assert.assertEquals(100L, snapshot.getValue());
             semaphore.release();
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             Assert.fail("Shouldn't be cancelled");
           }
         });

@@ -32,7 +32,7 @@ public class DatabaseRegistrarTest {
 
   @Test
   public void getComponents_publishesLibVersionComponent() {
-    FirebaseApp app = appForDatabaseUrl(TEST_NAMESPACE, "test");
+    FirebaseApp app = appForDatabaseUrl(TEST_NAMESPACE, "test";
     UserAgentPublisher userAgentPublisher = app.get(UserAgentPublisher.class);
 
     String actualUserAgent = userAgentPublisher.getUserAgent();

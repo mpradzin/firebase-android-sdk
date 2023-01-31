@@ -26,9 +26,9 @@ firebaseLibrary {
 }
 
 android {
-    compileSdkVersion project.targetSdkVersion
+    compileSdk project.targetSdkVersion
     defaultConfig {
-        minSdkVersion 16
+        minSdk 16
         multiDexEnabled true
         targetSdkVersion project.targetSdkVersion
         versionName version

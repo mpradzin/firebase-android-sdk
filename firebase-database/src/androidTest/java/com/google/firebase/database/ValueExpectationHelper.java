@@ -16,6 +16,8 @@ package com.google.firebase.database;
 
 import static org.junit.Assert.fail;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +45,7 @@ public class ValueExpectationHelper {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Object result = snapshot.getValue();
                 // Hack to handle race condition in initial data
                 if (DeepEquals.deepEquals(expected, result)) {
@@ -54,7 +56,7 @@ public class ValueExpectationHelper {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 fail("Listen cancelled");
               }
             });

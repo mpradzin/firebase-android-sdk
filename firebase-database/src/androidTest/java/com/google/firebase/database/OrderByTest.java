@@ -16,6 +16,7 @@ package com.google.firebase.database;
 
 import static org.junit.Assert.assertEquals;
 
+import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.google.firebase.database.core.RepoManager;
 import com.google.firebase.database.future.ReadFuture;
@@ -69,14 +70,14 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
                   valueOrder.add(child.getKey());
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -131,14 +132,14 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
                   valueOrder.add(child.getKey());
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -190,14 +191,14 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
                   valueOrder.add(child.getKey());
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -285,13 +286,13 @@ public class OrderByTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     reads[0]++;
                     semaphore.release();
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     Assert.fail();
                   }
                 });
@@ -300,13 +301,13 @@ public class OrderByTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     reads[0]++;
                     semaphore.release();
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     Assert.fail();
                   }
                 });
@@ -315,13 +316,13 @@ public class OrderByTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
                     reads[0]++;
                     semaphore.release();
                   }
 
                   @Override
-                  public void onCancelled(DatabaseError error) {
+                  public void onCancelled(@NonNull DatabaseError error) {
                     Assert.fail();
                   }
                 });
@@ -329,13 +330,13 @@ public class OrderByTest {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 reads[0]++;
                 semaphore.release();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -441,13 +442,13 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 snapshots.add(snapshot);
                 semaphore.release();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -490,13 +491,13 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 snapshots.add(snapshot);
                 semaphore.release();
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -534,7 +535,7 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
                   actualChildren.add(child.getKey());
                 }
@@ -542,7 +543,7 @@ public class OrderByTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -580,14 +581,14 @@ public class OrderByTest {
         query.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot child : snapshot.getChildren()) {
                   valueOrder.add(child.getKey());
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 Assert.fail();
               }
             });
@@ -626,10 +627,10 @@ public class OrderByTest {
             .addValueEventListener(
                 new ValueEventListener() {
                   @Override
-                  public void onDataChange(DataSnapshot snapshot) {}
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {}
 
                   @Override
-                  public void onCancelled(DatabaseError error) {}
+                  public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
     ref.addValueEventListener(listener);

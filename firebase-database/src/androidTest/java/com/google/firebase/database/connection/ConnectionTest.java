@@ -17,57 +17,65 @@ package com.google.firebase.database.connection;
 import static org.junit.Assert.assertFalse;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.google.firebase.database.IntegrationTestHelpers;
 import com.google.firebase.database.IntegrationTestValues;
 import com.google.firebase.database.RetryRule;
 import com.google.firebase.database.core.DatabaseConfig;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
+
 import org.junit.Rule;
 import org.junit.Test;
+
+import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 // TODO: Move this test to separate firebase-database-connection
 // tests.
 @org.junit.runner.RunWith(AndroidJUnit4.class)
 public class ConnectionTest {
-  @Rule public RetryRule retryRule = new RetryRule(3);
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
-  /**
-   * @throws InterruptedException Test to see if we can get a sessionID from a Connection and pass
-   *     it up to the Delegate
-   */
-  @Test
-  public void testObtainSessionID() throws InterruptedException {
-    final Semaphore valSemaphore = new Semaphore(0);
-    Connection.Delegate del =
-        new Connection.Delegate() {
-          @Override
-          public void onReady(long timestamp, String sessionId) {
-            assertFalse("sessionId is null", sessionId == null);
-            assertFalse("sessionId is empty", sessionId.isEmpty());
-            valSemaphore.release();
-          }
+    /**
+     * @throws InterruptedException Test to see if we can get a sessionID from a Connection and pass
+     *                              it up to the Delegate
+     */
+    @Test
+    public void testObtainSessionID() throws InterruptedException {
+        final Semaphore valSemaphore = new Semaphore(0);
+        Connection.Delegate del =
+                new Connection.Delegate() {
+                    @Override
+                    public void onReady(long timestamp, String sessionId) {
+                        assertFalse("sessionId is null", sessionId == null);
+                        assertFalse("sessionId is empty", sessionId.isEmpty());
+                        valSemaphore.release();
+                    }
 
-          @Override
-          public void onDataMessage(Map<String, Object> message) {}
+                    @Override
+                    public void onDataMessage(Map<String, Object> message) {
+                    }
 
-          @Override
-          public void onDisconnect(Connection.DisconnectReason reason) {}
+                    @Override
+                    public void onDisconnect(Connection.DisconnectReason reason) {
+                    }
 
-          @Override
-          public void onKill(String reason) {}
+                    @Override
+                    public void onKill(String reason) {
+                    }
 
-          @Override
-          public void onCacheHost(String s) {}
-        };
-    HostInfo info =
-        new HostInfo(
-            IntegrationTestValues.getHostname(),
-            IntegrationTestValues.getNamespace(),
-            /*secure=*/ true);
-    DatabaseConfig config = IntegrationTestHelpers.newFrozenTestConfig();
-    Connection conn = new Connection(config.getConnectionContext(), info, null, del, null, "");
-    conn.open();
-    IntegrationTestHelpers.waitFor(valSemaphore);
-  }
+                    @Override
+                    public void onCacheHost(String s) {
+                    }
+                };
+        HostInfo info =
+                new HostInfo(
+                        IntegrationTestValues.getHostname(),
+                        IntegrationTestValues.getNamespace(),
+                        /*secure=*/ true, null);
+        DatabaseConfig config = IntegrationTestHelpers.newFrozenTestConfig();
+        Connection conn = new Connection(config.getConnectionContext(), info, null, del, null, "");
+        conn.open();
+        IntegrationTestHelpers.waitFor(valSemaphore);
+    }
 }
