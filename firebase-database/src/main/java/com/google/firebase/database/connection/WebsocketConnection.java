@@ -55,7 +55,7 @@ class WebsocketConnection {
 
     private class WSClientTubesock implements WSClient, WebSocketEventHandler {
 
-        private WebSocket ws;
+        private final WebSocket ws;
 
         private WSClientTubesock(WebSocket ws) {
             this.ws = ws;
@@ -65,14 +65,11 @@ class WebsocketConnection {
         @Override
         public void onOpen() {
             executorService.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            connectTimeout.cancel(false);
-                            everConnected = true;
-                            if (logger.logsDebug()) logger.debug("websocket opened");
-                            resetKeepAlive();
-                        }
+                    () -> {
+                        connectTimeout.cancel(false);
+                        everConnected = true;
+                        if (logger.logsDebug()) logger.debug("websocket opened");
+                        resetKeepAlive();
                     });
         }
 
@@ -81,40 +78,29 @@ class WebsocketConnection {
             final String str = msg.getText();
             if (logger.logsDebug()) logger.debug("ws message: " + str);
             executorService.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            handleIncomingFrame(str);
-                        }
-                    });
+                    () -> handleIncomingFrame(str));
         }
 
         @Override
         public void onClose() {
             final String logMessage = "closed";
             executorService.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            if (logger.logsDebug()) logger.debug(logMessage);
-                            onClosed();
-                        }
+                    () -> {
+                        if (logger.logsDebug()) logger.debug(logMessage);
+                        onClosed();
                     });
         }
 
         @Override
         public void onError(final WebSocketException e) {
             executorService.execute(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            if (e.getCause() != null && e.getCause() instanceof EOFException) {
-                                logger.debug("WebSocket reached EOF.");
-                            } else {
-                                logger.debug("WebSocket error.", e);
-                            }
-                            onClosed();
+                    () -> {
+                        if (e.getCause() != null && e.getCause() instanceof EOFException) {
+                            logger.debug("WebSocket reached EOF.");
+                        } else {
+                            logger.debug("WebSocket error.", e);
                         }
+                        onClosed();
                     });
         }
 
@@ -158,7 +144,7 @@ class WebsocketConnection {
     private boolean isClosed = false;
     private long totalFrames = 0;
     private StringListReader frameReader;
-    private Delegate delegate;
+    private final Delegate delegate;
     private ScheduledFuture<?> keepAlive;
     private ScheduledFuture<?> connectTimeout;
     private final ConnectionContext connectionContext;
@@ -183,30 +169,23 @@ class WebsocketConnection {
     private WSClient createConnection(
             HostInfo hostInfo, String optCachedHost, String appCheckToken, String optLastSessionId) {
         String host = (optCachedHost != null) ? optCachedHost : hostInfo.getHost();
-        URI uri =
-                HostInfo.getConnectionUrl(
-                        host, hostInfo.isSecure(), hostInfo.getNamespace(), optLastSessionId);
-        Map<String, String> extraHeaders = new HashMap<String, String>();
+
+        URI uri = HostInfo.getConnectionUrl(
+                host, hostInfo.isSecure(), hostInfo.getNamespace(), optLastSessionId);
+        Map<String, String> extraHeaders = new HashMap<>();
         extraHeaders.put("User-Agent", connectionContext.getUserAgent());
         extraHeaders.put("X-Firebase-GMPID", connectionContext.getApplicationId());
         extraHeaders.put("X-Firebase-AppCheck", appCheckToken);
         extraHeaders.put("Upgrade", "WebSocket");
         extraHeaders.put("Connection", "Upgrade");
-        WebSocket ws = new WebSocket(connectionContext, uri, /*protocol=*/ null, extraHeaders);
-        WSClientTubesock client = new WSClientTubesock(ws);
-        return client;
+        WebSocket ws = new WebSocket(connectionContext, uri, /*protocol=*/ null, extraHeaders, hostInfo.getProxySocket());
+        return new WSClientTubesock(ws);
     }
 
     public void open() {
         conn.connect();
         connectTimeout =
-                executorService.schedule(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                closeIfNeverConnected();
-                            }
-                        },
+                executorService.schedule(this::closeIfNeverConnected,
                         CONNECT_TIMEOUT_MS,
                         TimeUnit.MILLISECONDS);
     }
@@ -235,13 +214,13 @@ class WebsocketConnection {
 
         try {
             String toSend = JsonMapper.serializeJson(message);
-            String[] segs = splitIntoFrames(toSend, MAX_FRAME_SIZE);
+            String[] segs = splitIntoFrames(toSend);
             if (segs.length > 1) {
                 conn.send("" + segs.length);
             }
 
-            for (int i = 0; i < segs.length; ++i) {
-                conn.send(segs[i]);
+            for (String seg : segs) {
+                conn.send(seg);
             }
         } catch (IOException e) {
             logger.error("Failed to serialize message: " + message.toString(), e);
@@ -327,13 +306,10 @@ class WebsocketConnection {
     }
 
     private Runnable nop() {
-        return new Runnable() {
-            @Override
-            public void run() {
-                if (conn != null) {
-                    conn.send("0");
-                    resetKeepAlive();
-                }
+        return () -> {
+            if (conn != null) {
+                conn.send("0");
+                resetKeepAlive();
             }
         };
     }
@@ -367,17 +343,17 @@ class WebsocketConnection {
         }
     }
 
-    private static String[] splitIntoFrames(String src, int maxFrameSize) {
-        if (src.length() <= maxFrameSize) {
+    private static String[] splitIntoFrames(String src) {
+        if (src.length() <= WebsocketConnection.MAX_FRAME_SIZE) {
             return new String[]{src};
         } else {
-            ArrayList<String> segs = new ArrayList<String>();
-            for (int i = 0; i < src.length(); i += maxFrameSize) {
-                int end = Math.min(i + maxFrameSize, src.length());
+            ArrayList<String> segs = new ArrayList<>();
+            for (int i = 0; i < src.length(); i += WebsocketConnection.MAX_FRAME_SIZE) {
+                int end = Math.min(i + WebsocketConnection.MAX_FRAME_SIZE, src.length());
                 String seg = src.substring(i, end);
                 segs.add(seg);
             }
-            return segs.toArray(new String[segs.size()]);
+            return segs.toArray(new String[0]);
         }
     }
 }

@@ -185,14 +185,14 @@ public class Query {
             repo,
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // Removing the event listener will also prevent any further calls into onDataChange
                 removeEventListener(this);
                 listener.onDataChange(snapshot);
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 listener.onCancelled(error);
               }
             },

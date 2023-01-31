@@ -14,56 +14,66 @@
 
 package com.google.firebase.database.connection;
 
+import com.google.firebase.database.annotations.Nullable;
+
+import java.net.Socket;
 import java.net.URI;
 
 public class HostInfo {
 
-  private static final String VERSION_PARAM = "v";
-  private static final String LAST_SESSION_ID_PARAM = "ls";
+    private static final String VERSION_PARAM = "v";
+    private static final String LAST_SESSION_ID_PARAM = "ls";
 
-  private final String host;
-  private final String namespace;
-  private final boolean secure;
+    private final String host;
+    private final String namespace;
+    private final boolean secure;
+    private final Socket proxySocket;
 
-  public HostInfo(String host, String namespace, boolean secure) {
-    this.host = host;
-    this.namespace = namespace;
-    this.secure = secure;
-  }
-
-  @Override
-  public String toString() {
-    return "http" + (secure ? "s" : "") + "://" + host;
-  }
-
-  public static URI getConnectionUrl(
-      String host, boolean secure, String namespace, String optLastSessionId) {
-    String scheme = secure ? "wss" : "ws";
-    String url =
-        scheme
-            + "://"
-            + host
-            + "/.ws?ns="
-            + namespace
-            + "&"
-            + VERSION_PARAM
-            + "="
-            + Constants.WIRE_PROTOCOL_VERSION;
-    if (optLastSessionId != null) {
-      url += "&" + LAST_SESSION_ID_PARAM + "=" + optLastSessionId;
+    public HostInfo(String host, String namespace, boolean secure, @Nullable Socket proxySocket) {
+        this.host = host;
+        this.namespace = namespace;
+        this.secure = secure;
+        this.proxySocket = proxySocket;
     }
-    return URI.create(url);
-  }
 
-  public String getHost() {
-    return this.host;
-  }
+    @Override
+    public String toString() {
+        return "http" + (secure ? "s" : "") + "://" + host;
+    }
 
-  public String getNamespace() {
-    return this.namespace;
-  }
+    public static URI getConnectionUrl(
+            String host, boolean secure, String namespace, String optLastSessionId) {
+        String scheme = secure ? "wss" : "ws";
+        String url =
+                scheme
+                        + "://"
+                        + host
+                        + "/.ws?ns="
+                        + namespace
+                        + "&"
+                        + VERSION_PARAM
+                        + "="
+                        + Constants.WIRE_PROTOCOL_VERSION;
+        if (optLastSessionId != null) {
+            url += "&" + LAST_SESSION_ID_PARAM + "=" + optLastSessionId;
+        }
+        return URI.create(url);
+    }
 
-  public boolean isSecure() {
-    return secure;
-  }
+    public String getHost() {
+        return this.host;
+    }
+
+    public String getNamespace() {
+        return this.namespace;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    @Nullable
+    public Socket getProxySocket() {
+        return proxySocket;
+    }
 }

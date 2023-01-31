@@ -145,7 +145,7 @@ public abstract class ImmutableSortedMap<K, V> implements Iterable<Map.Entry<K, 
         public static <A, B, C> ImmutableSortedMap<A, C> buildFrom(
                 List<A> keys,
                 Map<B, C> values,
-                ImmutableSortedMap.Builder.KeyTranslator<A, B> translator,
+                KeyTranslator<A, B> translator,
                 Comparator<A> comparator) {
             if (keys.size() < ARRAY_TO_RB_TREE_SIZE_THRESHOLD) {
                 return ArraySortedMap.buildFrom(keys, values, translator, comparator);

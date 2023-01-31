@@ -38,7 +38,7 @@ val Firebase.database: FirebaseDatabase
   get() = FirebaseDatabase.getInstance()
 
 /** Returns the [FirebaseDatabase] instance for the specified [url]. */
-fun Firebase.database(url: String): FirebaseDatabase = FirebaseDatabase.getInstance(url)
+fun Firebase.database(url: String): FirebaseDatabase = FirebaseDatabase.getInstance(url, null)
 
 /** Returns the [FirebaseDatabase] instance of the given [FirebaseApp]. */
 fun Firebase.database(app: FirebaseApp): FirebaseDatabase = FirebaseDatabase.getInstance(app)

@@ -17,73 +17,75 @@ package com.google.firebase.database.tubesock;
 import static java.util.logging.Level.WARNING;
 
 import com.google.firebase.database.IntegrationTestHelpers;
+
 import java.net.URI;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 public class TestClient {
-  private static Logger LOGGER = Logger.getLogger(Handler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Handler.class.getName());
 
-  private WebSocket client;
-  private AtomicBoolean inTest;
-  private Semaphore testLatch;
+    private WebSocket client;
+    private AtomicBoolean inTest;
+    private Semaphore testLatch;
 
-  private class Handler implements WebSocketEventHandler {
+    private class Handler implements WebSocketEventHandler {
 
-    @Override
-    public void onOpen() {}
-
-    @Override
-    public void onMessage(WebSocketMessage message) {
-      // For autobahn tests, simply echo back any valid messages we get
-      try {
-        if (message.isText()) {
-          client.send(message.getText());
-        } else {
-          client.send(message.getBytes());
+        @Override
+        public void onOpen() {
         }
-      } catch (WebSocketException e) {
-        LOGGER.log(WARNING, "unexpected error", e);
-      }
+
+        @Override
+        public void onMessage(WebSocketMessage message) {
+            // For autobahn tests, simply echo back any valid messages we get
+            try {
+                if (message.isText()) {
+                    client.send(message.getText());
+                } else {
+                    client.send(message.getBytes());
+                }
+            } catch (WebSocketException e) {
+                LOGGER.log(WARNING, "unexpected error", e);
+            }
+        }
+
+        @Override
+        public void onClose() {
+            finishTest();
+        }
+
+        @Override
+        public void onError(WebSocketException e) {
+            // The autobahn tests will generate a number of errors from the client. Uncomment this if you
+            // want to see them.
+            // e.printStackTrace();
+        }
+
+        @Override
+        public void onLogMessage(String msg) {
+            System.err.println(msg);
+        }
     }
 
-    @Override
-    public void onClose() {
-      finishTest();
+    public void startTest(String testNum) throws WebSocketException, InterruptedException {
+        URI uri = URI.create("ws://localhost:9001/runCase?case=" + testNum + "&agent=tubesock");
+        inTest = new AtomicBoolean(true);
+        testLatch = new Semaphore(0);
+        client = new WebSocket(IntegrationTestHelpers.getContext(0).getConnectionContext(), uri);
+        client.setEventHandler(new Handler());
+        client.connect();
+        testLatch.acquire(1);
+        // Not required, but make sure the threads exit after the socket is closed
+        client.blockClose();
     }
 
-    @Override
-    public void onError(WebSocketException e) {
-      // The autobahn tests will generate a number of errors from the client. Uncomment this if you
-      // want to see them.
-      // e.printStackTrace();
+    private void finishTest() {
+        if (inTest.compareAndSet(true, false)) {
+            testLatch.release(1);
+        } else {
+            // Sanity check to make sure we don't double-close
+            LOGGER.log(WARNING, "Tried to end a test that was already over");
+        }
     }
-
-    @Override
-    public void onLogMessage(String msg) {
-      System.err.println(msg);
-    }
-  }
-
-  public void startTest(String testNum) throws WebSocketException, InterruptedException {
-    URI uri = URI.create("ws://localhost:9001/runCase?case=" + testNum + "&agent=tubesock");
-    inTest = new AtomicBoolean(true);
-    testLatch = new Semaphore(0);
-    client = new WebSocket(IntegrationTestHelpers.getContext(0).getConnectionContext(), uri);
-    client.setEventHandler(new Handler());
-    client.connect();
-    testLatch.acquire(1);
-    // Not required, but make sure the threads exit after the socket is closed
-    client.blockClose();
-  }
-
-  private void finishTest() {
-    if (inTest.compareAndSet(true, false)) {
-      testLatch.release(1);
-    } else {
-      // Sanity check to make sure we don't double-close
-      LOGGER.log(WARNING, "Tried to end a test that was already over");
-    }
-  }
 }

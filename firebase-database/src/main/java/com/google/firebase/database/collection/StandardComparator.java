@@ -12,8 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/** @hide */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 package com.google.firebase.database.collection;
 
-import androidx.annotation.RestrictTo;
+import android.annotation.SuppressLint;
+
+import java.util.Comparator;
+
+@SuppressLint("FirebaseUnknownNullness")
+public class StandardComparator<A extends Comparable<A>> implements Comparator<A> {
+
+    private static StandardComparator INSTANCE = new StandardComparator();
+
+    private StandardComparator() {
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Comparable<T>> StandardComparator<T> getComparator(Class<T> clazz) {
+        return INSTANCE;
+    }
+
+    @Override
+    public int compare(A o1, A o2) {
+        return o1.compareTo(o2);
+    }
+}

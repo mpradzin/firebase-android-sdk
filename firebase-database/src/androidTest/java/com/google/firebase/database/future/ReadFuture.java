@@ -14,6 +14,8 @@
 
 package com.google.firebase.database.future;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.EventRecord;
@@ -55,7 +57,7 @@ public class ReadFuture implements Future<List<EventRecord>> {
     this.valueEventListener =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (ignoreFirstNull && events.size() == 0 && snapshot.getValue() == null) {
               return;
             }
@@ -73,7 +75,7 @@ public class ReadFuture implements Future<List<EventRecord>> {
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             wasCancelled = true;
             ref.removeEventListener(valueEventListener);
             finish();

@@ -103,7 +103,7 @@ class DatabaseTests : BaseTestCase() {
   @Test
   fun `Firebase#database should delegate to FirebaseDatabase#getInstance(url)`() {
     val url = "http://tests.fblocal.com:9000"
-    assertThat(Firebase.database(url)).isSameInstanceAs(FirebaseDatabase.getInstance(url))
+    assertThat(Firebase.database(url)).isSameInstanceAs(FirebaseDatabase.getInstance(url, null))
   }
 
   @Test

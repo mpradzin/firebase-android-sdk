@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 
+import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import com.google.firebase.FirebaseApp;
@@ -451,36 +452,36 @@ public class FirebaseDatabaseTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 fooValues.add(snapshot.getValue());
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     ref.child("bar/quu")
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 barQuuValues.add(snapshot.getValue());
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     ref.child("bar/qux")
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 barQuxValues.add(snapshot.getValue());
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     app.goOffline();
@@ -562,12 +563,12 @@ public class FirebaseDatabaseTest {
     ref.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             events.add("value-" + snapshot.getValue());
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {}
+          public void onCancelled(@NonNull DatabaseError error) {}
         });
 
     // Make sure the first value event is fired

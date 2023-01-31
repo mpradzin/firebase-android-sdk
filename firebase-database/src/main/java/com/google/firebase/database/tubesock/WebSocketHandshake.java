@@ -15,6 +15,7 @@
 package com.google.firebase.database.tubesock;
 
 import android.util.Base64;
+
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -22,102 +23,101 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 class WebSocketHandshake {
-  private static final String WEBSOCKET_VERSION = "13";
+    private static final String WEBSOCKET_VERSION = "13";
 
-  private URI url = null;
-  private String protocol = null;
-  private String nonce = null;
-  private Map<String, String> extraHeaders = null;
+    private final URI url;
+    private final String protocol;
+    private final String nonce;
+    private final Map<String, String> extraHeaders;
 
-  public WebSocketHandshake(URI url, String protocol, Map<String, String> extraHeaders) {
-    this.url = url;
-    this.protocol = protocol;
-    this.extraHeaders = extraHeaders;
-    this.nonce = this.createNonce();
-  }
-
-  public byte[] getHandshake() {
-    String path = url.getPath();
-    String query = url.getQuery();
-    path += query == null ? "" : "?" + query;
-    String host = url.getHost();
-
-    if (url.getPort() != -1) {
-      host += ":" + url.getPort();
+    public WebSocketHandshake(URI url, String protocol, Map<String, String> extraHeaders) {
+        this.url = url;
+        this.protocol = protocol;
+        this.extraHeaders = extraHeaders;
+        this.nonce = this.createNonce();
     }
 
-    LinkedHashMap<String, String> header = new LinkedHashMap<String, String>();
-    header.put("Host", host);
-    header.put("Upgrade", "websocket");
-    header.put("Connection", "Upgrade");
-    header.put("Sec-WebSocket-Version", WEBSOCKET_VERSION);
-    header.put("Sec-WebSocket-Key", this.nonce);
+    public byte[] getHandshake() {
+        String path = url.getPath();
+        String query = url.getQuery();
+        path += query == null ? "" : "?" + query;
+        String host = url.getHost();
 
-    if (this.protocol != null) {
-      header.put("Sec-WebSocket-Protocol", this.protocol);
-    }
-
-    if (this.extraHeaders != null) {
-      for (String fieldName : this.extraHeaders.keySet()) {
-        // Only checks for Field names with the exact same text,
-        // but according to RFC 2616 (HTTP) field names are case-insensitive.
-        if (!header.containsKey(fieldName)) {
-          header.put(fieldName, this.extraHeaders.get(fieldName));
+        if (url.getPort() != -1) {
+            host += ":" + url.getPort();
         }
-      }
+
+        LinkedHashMap<String, String> header = new LinkedHashMap<>();
+        header.put("Host", host);
+        header.put("Upgrade", "websocket");
+        header.put("Connection", "Upgrade");
+        header.put("Sec-WebSocket-Version", WEBSOCKET_VERSION);
+        header.put("Sec-WebSocket-Key", this.nonce);
+
+        if (this.protocol != null) {
+            header.put("Sec-WebSocket-Protocol", this.protocol);
+        }
+
+        if (this.extraHeaders != null) {
+            for (String fieldName : this.extraHeaders.keySet()) {
+                // Only checks for Field names with the exact same text,
+                // but according to RFC 2616 (HTTP) field names are case-insensitive.
+                if (!header.containsKey(fieldName)) {
+                    header.put(fieldName, this.extraHeaders.get(fieldName));
+                }
+            }
+        }
+
+        String handshake = "GET " + path + " HTTP/1.1\r\n";
+        handshake += this.generateHeader(header);
+        handshake += "\r\n";
+
+        byte[] tmpHandShakeBytes = handshake.getBytes(Charset.defaultCharset());
+        byte[] handshakeBytes = new byte[tmpHandShakeBytes.length];
+        System.arraycopy(tmpHandShakeBytes, 0, handshakeBytes, 0, tmpHandShakeBytes.length);
+
+        return handshakeBytes;
     }
 
-    String handshake = "GET " + path + " HTTP/1.1\r\n";
-    handshake += this.generateHeader(header);
-    handshake += "\r\n";
-
-    byte[] tmpHandShakeBytes = handshake.getBytes(Charset.defaultCharset());
-    byte[] handshakeBytes = new byte[tmpHandShakeBytes.length];
-    System.arraycopy(tmpHandShakeBytes, 0, handshakeBytes, 0, tmpHandShakeBytes.length);
-
-    return handshakeBytes;
-  }
-
-  private String generateHeader(LinkedHashMap<String, String> headers) {
-    String header = new String();
-    for (String fieldName : headers.keySet()) {
-      header += fieldName + ": " + headers.get(fieldName) + "\r\n";
+    private String generateHeader(LinkedHashMap<String, String> headers) {
+        StringBuilder header = new StringBuilder();
+        for (String fieldName : headers.keySet()) {
+            header.append(fieldName).append(": ").append(headers.get(fieldName)).append("\r\n");
+        }
+        return header.toString();
     }
-    return header;
-  }
 
-  private String createNonce() {
-    byte[] nonce = new byte[16];
-    for (int i = 0; i < 16; i++) {
-      nonce[i] = (byte) rand(0, 255);
+    private String createNonce() {
+        byte[] nonce = new byte[16];
+        for (int i = 0; i < 16; i++) {
+            nonce[i] = (byte) rand(0, 255);
+        }
+        return Base64.encodeToString(nonce, Base64.NO_WRAP);
     }
-    return Base64.encodeToString(nonce, Base64.NO_WRAP);
-  }
 
-  public void verifyServerStatusLine(String statusLine) {
-    int statusCode = Integer.parseInt(statusLine.substring(9, 12));
+    public void verifyServerStatusLine(String statusLine) {
+        int statusCode = Integer.parseInt(statusLine.substring(9, 12));
 
-    if (statusCode == 407) {
-      throw new WebSocketException("connection failed: proxy authentication not supported");
-    } else if (statusCode == 404) {
-      throw new WebSocketException("connection failed: 404 not found");
-    } else if (statusCode != 101) {
-      throw new WebSocketException("connection failed: unknown status code " + statusCode);
+        if (statusCode == 407) {
+            throw new WebSocketException("connection failed: proxy authentication not supported");
+        } else if (statusCode == 404) {
+            throw new WebSocketException("connection failed: 404 not found");
+        } else if (statusCode != 101) {
+            throw new WebSocketException("connection failed: unknown status code " + statusCode);
+        }
     }
-  }
 
-  public void verifyServerHandshakeHeaders(HashMap<String, String> lowercaseHeaders) {
-    if (!"websocket".equals(lowercaseHeaders.get("upgrade"))) {
-      throw new WebSocketException(
-          "connection failed: missing header field in server handshake: Upgrade");
-    } else if (!"upgrade".equals(lowercaseHeaders.get("connection"))) {
-      throw new WebSocketException(
-          "connection failed: missing header field in server handshake: Connection");
+    public void verifyServerHandshakeHeaders(HashMap<String, String> lowercaseHeaders) {
+        if (!"websocket".equals(lowercaseHeaders.get("upgrade"))) {
+            throw new WebSocketException(
+                    "connection failed: missing header field in server handshake: Upgrade");
+        } else if (!"upgrade".equals(lowercaseHeaders.get("connection"))) {
+            throw new WebSocketException(
+                    "connection failed: missing header field in server handshake: Connection");
+        }
     }
-  }
 
-  private int rand(int min, int max) {
-    int rand = (int) (Math.random() * max + min);
-    return rand;
-  }
+    private int rand(int min, int max) {
+        return (int) (Math.random() * max + min);
+    }
 }

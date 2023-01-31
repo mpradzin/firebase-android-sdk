@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import androidx.annotation.NonNull;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.google.firebase.database.core.RepoManager;
 import com.google.firebase.database.core.ZombieVerifier;
@@ -321,14 +322,14 @@ public class EventTest {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
                   callbackCount.incrementAndGet();
                 }
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 fail("Should not be cancelled");
               }
             });
@@ -361,10 +362,10 @@ public class EventTest {
     ValueEventListener listener =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {}
+          public void onDataChange(@NonNull DataSnapshot snapshot) {}
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         };
@@ -387,10 +388,10 @@ public class EventTest {
     ValueEventListener listener =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {}
+          public void onDataChange(@NonNull DataSnapshot snapshot) {}
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         };
@@ -426,7 +427,7 @@ public class EventTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Long val = (Long) snapshot.getValue();
                 if (val != null && val == 10L) {
                   assertTrue(readerSawA.compareAndSet(false, true));
@@ -435,7 +436,7 @@ public class EventTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     reader
@@ -443,7 +444,7 @@ public class EventTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Long val = (Long) snapshot.getValue();
                 if (val != null) {
                   if (val == 20L) {
@@ -456,7 +457,7 @@ public class EventTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     writer
@@ -464,7 +465,7 @@ public class EventTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Long val = (Long) snapshot.getValue();
                 if (val != null) {
                   assertTrue(writerSawA.compareAndSet(false, true));
@@ -473,7 +474,7 @@ public class EventTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     writer
@@ -481,7 +482,7 @@ public class EventTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Long val = (Long) snapshot.getValue();
                 if (val != null) {
                   if (val == 20L) {
@@ -494,7 +495,7 @@ public class EventTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {}
+              public void onCancelled(@NonNull DatabaseError error) {}
             });
 
     ZombieVerifier.verifyRepoZombies(refs);
@@ -551,14 +552,14 @@ public class EventTest {
     ValueEventListener listener =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (snapshot.getValue() != null) {
               callbackCount.incrementAndGet();
             }
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         };
@@ -596,12 +597,12 @@ public class EventTest {
         ref.addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 // no-op
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 // no-op
               }
             });
@@ -624,7 +625,7 @@ public class EventTest {
     ref.addValueEventListener(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             if (snapshot.getValue() != null) {
               assertTrue(called.compareAndSet(false, true));
               try {
@@ -644,7 +645,7 @@ public class EventTest {
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         });
@@ -671,7 +672,7 @@ public class EventTest {
         .addValueEventListener(
             new ValueEventListener() {
               @Override
-              public void onDataChange(DataSnapshot snapshot) {
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
                 gotInitialEvent.release();
                 if (snapshot.getValue() != null) {
                   assertTrue(called.compareAndSet(false, true));
@@ -692,7 +693,7 @@ public class EventTest {
               }
 
               @Override
-              public void onCancelled(DatabaseError error) {
+              public void onCancelled(@NonNull DatabaseError error) {
                 fail("Should not be cancelled");
               }
             });
@@ -720,7 +721,7 @@ public class EventTest {
     ValueEventListener listener =
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             gotInitialEvent.release();
             if (snapshot.getValue() != null) {
               assertTrue(called.compareAndSet(false, true));
@@ -741,7 +742,7 @@ public class EventTest {
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         };
@@ -822,12 +823,12 @@ public class EventTest {
     ref.addListenerForSingleValueEvent(
         new ValueEventListener() {
           @Override
-          public void onDataChange(DataSnapshot snapshot) {
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
             assertTrue(called.compareAndSet(false, true));
           }
 
           @Override
-          public void onCancelled(DatabaseError error) {
+          public void onCancelled(@NonNull DatabaseError error) {
             fail("Should not be cancelled");
           }
         });
