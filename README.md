@@ -26,7 +26,7 @@ android {
     ...
 
 ```
-3. Create tunnel socket witch apache SSlSocketFactory
+4. Create tunnel socket witch apache SSlSocketFactory
 
 
 ```
@@ -66,7 +66,7 @@ private fun getAuth(user: String, password: CharArray): Authenticator {
     }
 }
 ```
-4. Get firebase db instance with proxySocket
+5. Get firebase db instance with proxySocket
 
 ```
  FirebaseDatabase.getInstance(firebaseInstanceDbUrl, socket)
