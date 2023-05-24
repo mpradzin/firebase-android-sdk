@@ -164,66 +164,66 @@ public class FirebaseDatabase {
         return this.app;
     }
 
-    /**
-     * Gets a DatabaseReference for the database root node.
-     *
-     * @return A DatabaseReference pointing to the root node.
-     */
-    @NonNull
-    public DatabaseReference getReference() {
-        ensureRepo();
-        return new DatabaseReference(this.repo, Path.getEmptyPath());
+  /**
+   * Gets a DatabaseReference for the database root node.
+   *
+   * @return A DatabaseReference pointing to the root node.
+   */
+  @NonNull
+  public DatabaseReference getReference() {
+    ensureRepo();
+    return new DatabaseReference(this.repo, Path.getEmptyPath());
+  }
+
+  /**
+   * Gets a DatabaseReference for the provided path.
+   *
+   * @param path Path to a location in your FirebaseDatabase.
+   * @return A DatabaseReference pointing to the specified path.
+   */
+  @NonNull
+  public DatabaseReference getReference(@NonNull String path) {
+    ensureRepo();
+
+    if (path == null) {
+      throw new NullPointerException(
+          "Can't pass null for argument 'pathString' in " + "FirebaseDatabase.getReference()");
+    }
+    Validation.validateRootPathString(path);
+
+    Path childPath = new Path(path);
+    return new DatabaseReference(this.repo, childPath);
+  }
+
+  /**
+   * Gets a DatabaseReference for the provided URL. The URL must be a URL to a path within this
+   * FirebaseDatabase. To create a DatabaseReference to a different database, create a <br>
+   * {@link FirebaseApp} with a {@link FirebaseOptions} object configured with the appropriate
+   * database URL.
+   *
+   * @param url A URL to a path within your database.
+   * @return A DatabaseReference for the provided URL.
+   */
+  @NonNull
+  public DatabaseReference getReferenceFromUrl(@NonNull String url) {
+    ensureRepo();
+
+    if (url == null) {
+      throw new NullPointerException(
+          "Can't pass null for argument 'url' in " + "FirebaseDatabase.getReferenceFromUrl()");
     }
 
-    /**
-     * Gets a DatabaseReference for the provided path.
-     *
-     * @param path Path to a location in your FirebaseDatabase.
-     * @return A DatabaseReference pointing to the specified path.
-     */
-    @NonNull
-    public DatabaseReference getReference(@NonNull String path) {
-        ensureRepo();
+    ParsedUrl parsedUrl = Utilities.parseUrl(url);
+    parsedUrl.repoInfo.applyEmulatorSettings(this.emulatorSettings);
 
-        if (path == null) {
-            throw new NullPointerException(
-                    "Can't pass null for argument 'pathString' in " + "FirebaseDatabase.getReference()");
-        }
-        Validation.validateRootPathString(path);
-
-        Path childPath = new Path(path);
-        return new DatabaseReference(this.repo, childPath);
+    if (!parsedUrl.repoInfo.host.equals(this.repo.getRepoInfo().host)) {
+      throw new DatabaseException(
+          "Invalid URL ("
+              + url
+              + ") passed to getReference().  "
+              + "URL was expected to match configured Database URL: "
+              + getReference());
     }
-
-    /**
-     * Gets a DatabaseReference for the provided URL. The URL must be a URL to a path within this
-     * FirebaseDatabase. To create a DatabaseReference to a different database, create a {@link
-     * FirebaseApp} with a {@link FirebaseOptions} object configured with the appropriate database
-     * URL.
-     *
-     * @param url A URL to a path within your database.
-     * @return A DatabaseReference for the provided URL.
-     */
-    @NonNull
-    public DatabaseReference getReferenceFromUrl(@NonNull String url) {
-        ensureRepo();
-
-        if (url == null) {
-            throw new NullPointerException(
-                    "Can't pass null for argument 'url' in " + "FirebaseDatabase.getReferenceFromUrl()");
-        }
-
-        ParsedUrl parsedUrl = Utilities.parseUrl(url);
-        parsedUrl.repoInfo.applyEmulatorSettings(this.emulatorSettings);
-
-        if (!parsedUrl.repoInfo.host.equals(this.repo.getRepoInfo().host)) {
-            throw new DatabaseException(
-                    "Invalid URL ("
-                            + url
-                            + ") passed to getReference().  "
-                            + "URL was expected to match configured Database URL: "
-                            + getReference().toString());
-        }
 
         return new DatabaseReference(this.repo, parsedUrl.path);
     }
@@ -249,22 +249,22 @@ public class FirebaseDatabase {
                 });
     }
 
-    /**
-     * Resumes our connection to the Firebase Database backend after a previous {@link #goOffline()}
-     * call.
-     */
-    public void goOnline() {
-        ensureRepo();
-        RepoManager.resume(this.repo);
-    }
+  /**
+   * Resumes our connection to the Firebase Database backend after a previous {@link #goOffline()}
+   * call.
+   */
+  public void goOnline() {
+    ensureRepo();
+    RepoManager.resume(this.repo);
+  }
 
-    /**
-     * Shuts down our connection to the Firebase Database backend until {@link #goOnline()} is called.
-     */
-    public void goOffline() {
-        ensureRepo();
-        RepoManager.interrupt(this.repo);
-    }
+  /**
+   * Shuts down our connection to the Firebase Database backend until {@link #goOnline()} is called.
+   */
+  public void goOffline() {
+    ensureRepo();
+    RepoManager.interrupt(this.repo);
+  }
 
     /**
      * By default, this is set to {@link Logger.Level#INFO INFO}. This includes any internal errors

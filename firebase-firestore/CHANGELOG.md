@@ -1,5 +1,87 @@
 # Unreleased
-* [fixed] Fix an issue that stops some performance optimization being applied.
+- [feature] Implemented an optimization in the local cache synchronization logic that reduces the number of billed document reads when documents were deleted on the server while the client was not actively listening to the query (e.g. while the client was offline). (GitHub [#4982](//github.com/firebase/firebase-android-sdk/pull/4982){: .external})
+
+# 24.6.0
+* [fixed] Fixed stack overflow caused by deeply nested server timestamps.
+  (GitHub [#4702](//github.com/firebase/firebase-android-sdk/issues/4702){: .external})
+
+* [feature] Added new
+  [cache config APIs](/docs/reference/android/com/google/firebase/firestore/FirebaseFirestoreSettings.Builder#setLocalCacheSettings(com.google.firebase.firestore.LocalCacheSettings))
+  to customize the SDK's cache setup.
+
+* [feature] Added
+  [LRU garbage collector](/docs/reference/android/com/google/firebase/firestore/MemoryLruGcSettings)
+  to the SDK's memory cache.
+
+* [deprecated] Deprecated the following APIs from
+  [`FirebaseFirestoreSettings`](/docs/reference/android/com/google/firebase/firestore/FirebaseFirestoreSettings):<br>
+  `isPersistenceEnabled` and `getCacheSizeBytes`.
+
+* [deprecated] Deprecated the following APIs from
+  [`FirebaseFirestoreSettings.Builder`](/docs/reference/android/com/google/firebase/firestore/FirebaseFirestoreSettings.Builder#setLocalCacheSettings(com.google.firebase.firestore.LocalCacheSettings)):<br>
+  `isPersistenceEnabled`, `getCacheSizeBytes`, `setPersistenceEnabled`,
+  and `setCacheSizeBytes`.
+
+* [changed] Internal changes to ensure alignment with other SDK releases.
+
+
+## Kotlin
+The Kotlin extensions library transitively includes the updated
+`firebase-firestore` library. The Kotlin extensions library has no additional
+updates.
+# 24.5.0
+* [fixed] Fixed stack overflow caused by deeply nested server timestamps.
+  (GitHub [#4702](//github.com/firebase/firebase-android-sdk/issues/4702){: .external})
+
+
+## Kotlin
+* [feature] Added
+  [`Query.dataObjects<T>()`](/docs/reference/kotlin/com/google/firebase/firestore/ktx/package-summary#dataObjects)
+  and
+  [`DocumentReference.dataObjects<T>()`](/docs/reference/kotlin/com/google/firebase/firestore/ktx/package-summary#dataObjects_1)
+  Kotlin Flows to listen for realtime updates and convert its values to a
+  specific type.
+# 24.4.5
+* [feature] Added support for disjunctions in queries (`OR` queries).
+
+
+## Kotlin
+The Kotlin extensions library transitively includes the updated
+`firebase-firestore` library. The Kotlin extensions library has no additional
+updates.
+
+# 24.4.4
+* [changed] Relaxed certain query validations performed by the SDK
+  ([GitHub Issue #4231](//github.com/firebase/firebase-android-sdk/issues/4231)).
+* [changed] Updated gRPC to 1.52.1, and updated JavaLite, protoc, and
+  protobuf-java-util to 3.21.11.
+
+
+## Kotlin
+The Kotlin extensions library transitively includes the updated
+`firebase-firestore` library. The Kotlin extensions library has no additional
+updates.
+
+# 24.4.3
+* [fixed] Fixed a potential high-memory usage issue.
+* [fixed] Fixed an issue that stopped some performance optimization from being
+  applied.
+
+
+## Kotlin
+The Kotlin extensions library transitively includes the updated
+`firebase-firestore` library. The Kotlin extensions library has no additional
+updates.
+
+# 24.4.2
+* [fixed] Fixed an issue that stopped some performance optimization from being
+  applied.
+
+
+## Kotlin
+The Kotlin extensions library transitively includes the updated
+`firebase-firestore` library. The Kotlin extensions library has no additional
+updates.
 
 # 24.4.1
 * [fixed] Fix `FAILED_PRECONDITION` when writing to a deleted document in a
@@ -16,6 +98,7 @@
 
 * [changed] Updated dependency of `io.grpc.*` to its latest version
   (v1.50.2).
+
 
 ## Kotlin
 The Kotlin extensions library transitively includes the updated

@@ -34,6 +34,7 @@ import com.google.firebase.remoteconfig.internal.ConfigFetchHandler;
 import com.google.firebase.remoteconfig.internal.ConfigFetchHandler.FetchResponse;
 import com.google.firebase.remoteconfig.internal.ConfigGetParameterHandler;
 import com.google.firebase.remoteconfig.internal.ConfigMetadataClient;
+import com.google.firebase.remoteconfig.internal.ConfigRealtimeHandler;
 import com.google.firebase.remoteconfig.internal.DefaultsXmlParser;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,14 +48,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Entry point for the Firebase Remote Config (FRC) API.
+ * Entry point for the Firebase Remote Config API.
  *
  * <p>Callers should first get the singleton object using {@link #getInstance()}, and then call
- * operations on that singleton object. The singleton contains the complete set of FRC parameter
- * values available to your app. The singleton also stores values fetched from the FRC Server until
- * they are made available for use with a call to {@link #activate()}.
- *
- * @author Miraziz Yusupov
+ * operations on that singleton object. The singleton contains the complete set of Remote Config
+ * parameter values available to your app. The singleton also stores values fetched from the Remote
+ * Config server until they are made available for use with a call to {@link #activate()}.
  */
 public class FirebaseRemoteConfig {
   // -------------------------------------------------------------------------------
@@ -63,8 +62,8 @@ public class FirebaseRemoteConfig {
   /**
    * Returns a singleton instance of Firebase Remote Config.
    *
-   * <p>{@link FirebaseRemoteConfig} uses the default {@link FirebaseApp}, so if no {@link
-   * FirebaseApp} has been initialized yet, this method throws an {@link IllegalStateException}.
+   * <p>{@link FirebaseRemoteConfig} uses the default {@link FirebaseApp}, throwing an <br>
+   * {@link IllegalStateException} if one has not been initialized yet.
    *
    * <p>Note: Also initializes the Firebase installations SDK that creates installation IDs to
    * identify Firebase installations and periodically sends data to Firebase servers. Remote Config
@@ -73,8 +72,8 @@ public class FirebaseRemoteConfig {
    * after deletion will create a new installation ID for this Firebase installation and resume the
    * periodic sync.
    *
-   * @return A singleton instance of {@link FirebaseRemoteConfig} for the default {@link
-   *     FirebaseApp}.
+   * @return A singleton instance of {@link FirebaseRemoteConfig} for the default {@link FirebaseApp
+   *     }.
    */
   @NonNull
   public static FirebaseRemoteConfig getInstance() {
@@ -105,27 +104,27 @@ public class FirebaseRemoteConfig {
   public static final int VALUE_SOURCE_STATIC = 0;
   /** Indicates that the value returned was retrieved from the defaults set by the client. */
   public static final int VALUE_SOURCE_DEFAULT = 1;
-  /** Indicates that the value returned was retrieved from the Firebase Remote Config Server. */
+  /** Indicates that the value returned was retrieved from the Firebase Remote Config server. */
   public static final int VALUE_SOURCE_REMOTE = 2;
 
   /**
-   * Indicates that the most recent fetch of parameter values from the Firebase Remote Config Server
+   * Indicates that the most recent fetch of parameter values from the Firebase Remote Config server
    * was completed successfully.
    */
   public static final int LAST_FETCH_STATUS_SUCCESS = -1;
   /**
    * Indicates that the FirebaseRemoteConfig singleton object has not yet attempted to fetch
-   * parameter values from the Firebase Remote Config Server.
+   * parameter values from the Firebase Remote Config server.
    */
   public static final int LAST_FETCH_STATUS_NO_FETCH_YET = 0;
   /**
    * Indicates that the most recent attempt to fetch parameter values from the Firebase Remote
-   * Config Server has failed.
+   * Config server has failed.
    */
   public static final int LAST_FETCH_STATUS_FAILURE = 1;
   /**
    * Indicates that the most recent attempt to fetch parameter values from the Firebase Remote
-   * Config Server was throttled.
+   * Config server was throttled.
    */
   public static final int LAST_FETCH_STATUS_THROTTLED = 2;
 
@@ -152,6 +151,7 @@ public class FirebaseRemoteConfig {
   private final ConfigGetParameterHandler getHandler;
   private final ConfigMetadataClient frcMetadata;
   private final FirebaseInstallationsApi firebaseInstallations;
+  private final ConfigRealtimeHandler configRealtimeHandler;
 
   /**
    * Firebase Remote Config constructor.
@@ -169,7 +169,8 @@ public class FirebaseRemoteConfig {
       ConfigCacheClient defaultConfigsCache,
       ConfigFetchHandler fetchHandler,
       ConfigGetParameterHandler getHandler,
-      ConfigMetadataClient frcMetadata) {
+      ConfigMetadataClient frcMetadata,
+      ConfigRealtimeHandler configRealtimeHandler) {
     this.context = context;
     this.firebaseApp = firebaseApp;
     this.firebaseInstallations = firebaseInstallations;
@@ -181,6 +182,7 @@ public class FirebaseRemoteConfig {
     this.fetchHandler = fetchHandler;
     this.getHandler = getHandler;
     this.frcMetadata = frcMetadata;
+    this.configRealtimeHandler = configRealtimeHandler;
   }
 
   /**
@@ -229,8 +231,8 @@ public class FirebaseRemoteConfig {
    * take effect.
    *
    * @return {@link Task} with a {@code true} result if the current call activated the fetched
-   *     configs; if the fetched configs were already activated by a previous call, returns a {@link
-   *     Task} with a {@code false} result.
+   *     configs; if the fetched configs were already activated by a previous call, it instead
+   *     returns a {@link Task} with a {@code false} result.
    */
   @NonNull
   public Task<Boolean> activate() {
@@ -454,8 +456,8 @@ public class FirebaseRemoteConfig {
   }
 
   /**
-   * Returns the state of this {@link FirebaseRemoteConfig} instance as a {@link
-   * FirebaseRemoteConfigInfo}.
+   * Returns the state of this {@link FirebaseRemoteConfig} instance as a <br>
+   * {@link FirebaseRemoteConfigInfo}.
    */
   @NonNull
   public FirebaseRemoteConfigInfo getInfo() {
@@ -545,6 +547,29 @@ public class FirebaseRemoteConfig {
   }
 
   /**
+   * Starts listening for real-time config updates from the Remote Config backend and automatically
+   * fetches updates from the RC backend when they are available.
+   *
+   * <p>If a connection to the Remote Config backend is not already open, calling this method will
+   * open it. Multiple listeners can be added by calling this method again, but subsequent calls
+   * re-use the same connection to the backend.
+   *
+   * <p>Note: Real-time Remote Config requires the Firebase Remote Config Realtime API. See the <a
+   * href="https://firebase.google.com/docs/remote-config/get-started?platform=android#add-real-time-listener">Remote
+   * Config Get Started</a> guide to enable the API.
+   *
+   * @param configUpdateListener A {@link ConfigUpdateListener} that can be used to respond to
+   *     config updates when they're fetched.
+   * @return A {@link ConfigUpdateListenerRegistration} that allows you to remove the added {@code
+   *     configUpdateListener} and close the connection when there are no more listeners.
+   */
+  @NonNull
+  public ConfigUpdateListenerRegistration addOnConfigUpdateListener(
+      @NonNull ConfigUpdateListener configUpdateListener) {
+    return configRealtimeHandler.addRealtimeConfigUpdateListener(configUpdateListener);
+  }
+
+  /**
    * Loads all the configs from disk by calling {@link ConfigCacheClient#get} on each cache client.
    *
    * @hide
@@ -553,6 +578,15 @@ public class FirebaseRemoteConfig {
     activatedConfigsCache.get();
     defaultConfigsCache.get();
     fetchedConfigsCache.get();
+  }
+
+  /**
+   * Execute a runnable in Remote Config's background thread pool.
+   *
+   * @hide
+   */
+  public void schedule(Runnable runnable) {
+    executor.execute(runnable);
   }
 
   /**
@@ -628,6 +662,16 @@ public class FirebaseRemoteConfig {
       // without coupling the FRC and ABT SDKs.
       Log.w(TAG, "Could not update ABT experiments.", e);
     }
+  }
+
+  /**
+   * Changes background state of the real-time handler depending on if the app is in the foreground
+   * or not.
+   *
+   * @hide
+   */
+  void setConfigUpdateBackgroundState(boolean backgroundState) {
+    configRealtimeHandler.setBackgroundState(backgroundState);
   }
 
   /**

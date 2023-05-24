@@ -38,12 +38,14 @@ import com.google.firebase.crashlytics.internal.DevelopmentPlatformProvider;
 import com.google.firebase.crashlytics.internal.NativeSessionFileProvider;
 import com.google.firebase.crashlytics.internal.analytics.AnalyticsEventLogger;
 import com.google.firebase.crashlytics.internal.metadata.LogFileManager;
+import com.google.firebase.crashlytics.internal.model.CrashlyticsReport;
 import com.google.firebase.crashlytics.internal.persistence.FileStore;
 import com.google.firebase.crashlytics.internal.settings.Settings;
 import com.google.firebase.crashlytics.internal.settings.SettingsProvider;
 import com.google.firebase.crashlytics.internal.settings.TestSettings;
 import com.google.firebase.installations.FirebaseInstallationsApi;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -135,10 +137,13 @@ public class CrashlyticsControllerTest extends CrashlyticsTestCase {
       CrashlyticsFileMarker crashMarker =
           new CrashlyticsFileMarker(CrashlyticsCore.CRASH_MARKER_FILE_NAME, testFileStore);
 
+      List<BuildIdInfo> buildIdInfoList = new ArrayList<>();
+      buildIdInfoList.add(new BuildIdInfo("lib.so", "x86", "aabb"));
       AppData appData =
           new AppData(
               GOOGLE_APP_ID,
               "buildId",
+              buildIdInfoList,
               "installerPackageName",
               "packageName",
               "versionCode",
@@ -236,6 +241,11 @@ public class CrashlyticsControllerTest extends CrashlyticsTestCase {
               }
 
               @Override
+              public CrashlyticsReport.ApplicationExitInfo getApplicationExitInto() {
+                return null;
+              }
+
+              @Override
               public File getBinaryImagesFile() {
                 return null;
               }
@@ -275,9 +285,9 @@ public class CrashlyticsControllerTest extends CrashlyticsTestCase {
 
     controller.finalizeSessions(testSettingsProvider);
     verify(mockSessionReportingCoordinator)
-        .finalizeSessionWithNativeEvent(eq(previousSessionId), any());
+        .finalizeSessionWithNativeEvent(eq(previousSessionId), any(), any());
     verify(mockSessionReportingCoordinator, never())
-        .finalizeSessionWithNativeEvent(eq(sessionId), any());
+        .finalizeSessionWithNativeEvent(eq(sessionId), any(), any());
   }
 
   public void testMissingNativeComponentCausesNoReports() {

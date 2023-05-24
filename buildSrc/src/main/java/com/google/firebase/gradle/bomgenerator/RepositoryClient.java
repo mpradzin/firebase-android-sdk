@@ -16,6 +16,7 @@ package com.google.firebase.gradle.bomgenerator;
 
 import com.google.firebase.gradle.bomgenerator.model.Dependency;
 import com.google.firebase.gradle.bomgenerator.model.VersionBump;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -25,9 +26,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -53,108 +56,108 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class RepositoryClient {
-  private static final RemoteRepository GMAVEN =
-      new RemoteRepository.Builder("central", "default", "https://maven.google.com").build();
+    private static final RemoteRepository GMAVEN =
+            new RemoteRepository.Builder("central", "default", "https://maven.google.com").build();
 
-  private final RepositorySystem system;
-  private final RepositorySystemSession session;
+    private final RepositorySystem system;
+    private final RepositorySystemSession session;
 
-  public RepositoryClient() {
-    system = newRepositorySystem();
-    session = newRepositorySystemSession(system);
-  }
-
-  public Dependency populateDependencyVersion(
-      Dependency firebaseDep, Map<String, String> versionsFromPreviousBomByArtifact) {
-    try {
-      List<Version> rangeResult = getVersionsForDependency(firebaseDep).getVersions();
-      String version = rangeResult.get(rangeResult.size() - 1).toString();
-      String versionFromPreviousBom =
-          versionsFromPreviousBomByArtifact.get(firebaseDep.fullArtifactId());
-
-      VersionBump versionBump =
-          versionFromPreviousBom == null
-              ? VersionBump.MINOR
-              : VersionBump.getBumpBetweenVersion(version, versionFromPreviousBom);
-      return Dependency.create(
-          firebaseDep.groupId(), firebaseDep.artifactId(), version, versionBump);
-    } catch (VersionRangeResolutionException e) {
-      throw new GradleException("Failed to resolve dependency: " + firebaseDep.toGradleString(), e);
+    public RepositoryClient() {
+        system = newRepositorySystem();
+        session = newRepositorySystemSession(system);
     }
-  }
 
-  public Optional<String> getLastPublishedVersion(Dependency dependency)
-      throws VersionRangeResolutionException {
-    Version version = getVersionsForDependency(dependency).getHighestVersion();
-    return Optional.ofNullable(version).map(Version::toString);
-  }
+    public Dependency populateDependencyVersion(
+            Dependency firebaseDep, Map<String, String> versionsFromPreviousBomByArtifact) {
+        try {
+            List<Version> rangeResult = getVersionsForDependency(firebaseDep).getVersions();
+            String version = rangeResult.get(rangeResult.size() - 1).toString();
+            String versionFromPreviousBom =
+                    versionsFromPreviousBomByArtifact.get(firebaseDep.fullArtifactId());
 
-  public Set<String> getAllFirebaseArtifacts() {
-    try (InputStream index =
-        new URL("https://dl.google.com/dl/android/maven2/com/google/firebase/group-index.xml")
-            .openStream()) {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setValidating(true);
-      factory.setIgnoringElementContentWhitespace(true);
-      DocumentBuilder builder = factory.newDocumentBuilder();
-      Document doc = builder.parse(index);
-      NodeList artifactList = doc.getFirstChild().getChildNodes();
-      Set<String> outputArtifactIds = new HashSet<>();
-      for (int i = 0; i < artifactList.getLength(); i++) {
-        Node artifact = artifactList.item(i);
-        if (artifact.getNodeName().contains("#")) {
-          continue;
+            VersionBump versionBump =
+                    versionFromPreviousBom == null
+                            ? VersionBump.MINOR
+                            : VersionBump.getBumpBetweenVersion(version, versionFromPreviousBom);
+            return Dependency.create(
+                    firebaseDep.groupId(), firebaseDep.artifactId(), version, versionBump);
+        } catch (VersionRangeResolutionException e) {
+            throw new GradleException("Failed to resolve dependency: " + firebaseDep.toGradleString(), e);
         }
-        outputArtifactIds.add("com.google.firebase:" + artifact.getNodeName());
-      }
-      return outputArtifactIds;
-    } catch (SAXException | IOException | ParserConfigurationException e) {
-      throw new RuntimeException("Failed to get Firebase Artifact Ids", e);
     }
-  }
 
-  // Dependency string must be in the format <groupId>:<artifactId>
-  // for example: "com.google.firebase:firebase-bom"
-  private VersionRangeResult getVersionsForDependency(Dependency dep)
-      throws VersionRangeResolutionException {
-    Artifact requestArtifact = new DefaultArtifact(dep.fullArtifactId() + ":[0,)");
+    public Optional<String> getLastPublishedVersion(Dependency dependency)
+            throws VersionRangeResolutionException {
+        Version version = getVersionsForDependency(dependency).getHighestVersion();
+        return Optional.ofNullable(version).map(Version::toString);
+    }
 
-    VersionRangeRequest rangeRequest = new VersionRangeRequest();
-    rangeRequest.setArtifact(requestArtifact);
-    rangeRequest.setRepositories(Arrays.asList(GMAVEN));
+    public Set<String> getAllFirebaseArtifacts() {
+        try (InputStream index =
+                     new URL("https://dl.google.com/dl/android/maven2/com/google/firebase/group-index.xml")
+                             .openStream()) {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setValidating(true);
+            factory.setIgnoringElementContentWhitespace(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(index);
+            NodeList artifactList = doc.getFirstChild().getChildNodes();
+            Set<String> outputArtifactIds = new HashSet<>();
+            for (int i = 0; i < artifactList.getLength(); i++) {
+                Node artifact = artifactList.item(i);
+                if (artifact.getNodeName().contains("#")) {
+                    continue;
+                }
+                outputArtifactIds.add("com.google.firebase:" + artifact.getNodeName());
+            }
+            return outputArtifactIds;
+        } catch (SAXException | IOException | ParserConfigurationException e) {
+            throw new RuntimeException("Failed to get Firebase Artifact Ids", e);
+        }
+    }
 
-    return system.resolveVersionRange(session, rangeRequest);
-  }
+    // Dependency string must be in the format <groupId>:<artifactId>
+    // for example: "com.google.firebase:firebase-bom"
+    private VersionRangeResult getVersionsForDependency(Dependency dep)
+            throws VersionRangeResolutionException {
+        Artifact requestArtifact = new DefaultArtifact(dep.fullArtifactId() + ":[0,)");
 
-  private static RepositorySystem newRepositorySystem() {
-    /*
-     * Aether's components implement org.eclipse.aether.spi.locator.Service to ease
-     * manual wiring and using the prepopulated DefaultServiceLocator, we only need
-     * to register the repository connector and transporter factories.
-     */
-    DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-    locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-    locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-    locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
+        VersionRangeRequest rangeRequest = new VersionRangeRequest();
+        rangeRequest.setArtifact(requestArtifact);
+        rangeRequest.setRepositories(Arrays.asList(GMAVEN));
 
-    locator.setErrorHandler(
-        new DefaultServiceLocator.ErrorHandler() {
-          @Override
-          public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
-            exception.printStackTrace();
-          }
-        });
+        return system.resolveVersionRange(session, rangeRequest);
+    }
 
-    return locator.getService(RepositorySystem.class);
-  }
+    private static RepositorySystem newRepositorySystem() {
+        /*
+         * Aether's components implement org.eclipse.aether.spi.locator.Service to ease
+         * manual wiring and using the prepopulated DefaultServiceLocator, we only need
+         * to register the repository connector and transporter factories.
+         */
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
+        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
 
-  private static DefaultRepositorySystemSession newRepositorySystemSession(
-      RepositorySystem system) {
-    DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+        locator.setErrorHandler(
+                new DefaultServiceLocator.ErrorHandler() {
+                    @Override
+                    public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
+                        exception.printStackTrace();
+                    }
+                });
 
-    LocalRepository localRepo = new LocalRepository("target/local-repo");
-    session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
+        return locator.getService(RepositorySystem.class);
+    }
 
-    return session;
-  }
+    private static DefaultRepositorySystemSession newRepositorySystemSession(
+            RepositorySystem system) {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
+
+        LocalRepository localRepo = new LocalRepository("target/local-repo");
+        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
+
+        return session;
+    }
 }

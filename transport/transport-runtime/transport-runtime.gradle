@@ -54,16 +54,13 @@ firebaseLibrary {
     testLab {
         enabled = true
 
-        device 'model=walleye,version=28' // Pixel2
+        device 'model=blueline,version=28' // Pixel3
         device 'model=walleye,version=27' // Pixel2
-        device 'model=victara,version=19' // Moto X
         device 'model=Nexus4,version=22'
         device 'model=Nexus7,version=21'
         device 'model=Nexus4,version=19'
         device 'model=starqlteue,version=26' // Galaxy S9
-        device 'model=m0,version=18' // Galaxy S3
-        device 'model=hero2lte,version=23' // Galaxy S7
-        device 'model=htc_m8,version=19' // HTC One (M8)
+        device 'model=harpia,version=23' // Moto G Play
     }
 }
 
@@ -106,11 +103,11 @@ thirdPartyLicenses {
 }
 
 dependencies {
-    implementation project(':transport:transport-api')
+    implementation 'com.google.android.datatransport:transport-api:3.0.0'
     implementation 'androidx.annotation:annotation:1.3.0'
     implementation 'javax.inject:javax.inject:1'
-    implementation project(":encoders:firebase-encoders")
-    implementation project(":encoders:firebase-encoders-proto")
+    implementation 'com.google.firebase:firebase-encoders:17.0.0'
+    implementation "com.google.firebase:firebase-encoders-proto:16.0.0"
     annotationProcessor project(":encoders:firebase-encoders-processor")
 
     vendor ('com.google.dagger:dagger:2.27') {
@@ -118,6 +115,7 @@ dependencies {
     }
 
     compileOnly "com.google.auto.value:auto-value-annotations:1.6.6"
+    compileOnly "com.google.errorprone:error_prone_annotations:2.9.0"
 
     annotationProcessor "com.google.auto.value:auto-value:1.6.5"
     annotationProcessor 'com.google.dagger:dagger-compiler:2.27'

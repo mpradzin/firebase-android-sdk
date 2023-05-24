@@ -22,80 +22,80 @@ import java.util.function.Consumer;
 
 public class GitClient {
 
-  private final String mRelease;
-  private final String rcCommit;
-  private final ShellExecutor executor;
-  private final Consumer<String> logger;
+    private final String mRelease;
+    private final String rcCommit;
+    private final ShellExecutor executor;
+    private final Consumer<String> logger;
 
-  private final List<String> newTags;
-  private final Consumer<List<String>> handler; // handles shell outputs of git commands
+    private final List<String> newTags;
+    private final Consumer<List<String>> handler; // handles shell outputs of git commands
 
-  public GitClient(
-      String mRelease, String rcCommit, ShellExecutor executor, Consumer<String> logger) {
-    this.mRelease = mRelease;
-    this.rcCommit = rcCommit;
-    this.executor = executor;
-    this.logger = logger;
+    public GitClient(
+            String mRelease, String rcCommit, ShellExecutor executor, Consumer<String> logger) {
+        this.mRelease = mRelease;
+        this.rcCommit = rcCommit;
+        this.executor = executor;
+        this.logger = logger;
 
-    this.newTags = new ArrayList<>();
-    this.handler = this.deriveGitCommandOutputHandlerFromLogger(logger);
-    this.showVersion();
-    this.configureRemoteRepo("FirebasePrivate/firebase-android-sdk");
-  }
-
-  public void tagReleaseVersion() {
-    this.tag(mRelease);
-  }
-
-  public void tagBomVersion(String version) {
-    String tag = "bom@" + version;
-    this.tag(tag);
-  }
-
-  public void tagProductVersion(String product, String version) {
-    String tag = product + "@" + version;
-    this.tag(tag);
-  }
-
-  public void pushCreatedTags() {
-    if (!this.onProw() || newTags.isEmpty()) {
-      return;
+        this.newTags = new ArrayList<>();
+        this.handler = this.deriveGitCommandOutputHandlerFromLogger(logger);
+        this.showVersion();
+        this.configureRemoteRepo("FirebasePrivate/firebase-android-sdk");
     }
 
-    List<String> copy = new ArrayList<>(newTags);
-    Collections.reverse(copy); // GitHub list tags in the reverse chronological order
-    StringJoiner joiner = new StringJoiner(" ");
-    copy.stream().map(x -> "refs/tags/" + x).forEach(joiner::add);
-    String tags = joiner.toString();
+    public void tagReleaseVersion() {
+        this.tag(mRelease);
+    }
 
-    logger.accept("Tags to be pushed: " + tags);
+    public void tagBomVersion(String version) {
+        String tag = "bom@" + version;
+        this.tag(tag);
+    }
 
-    logger.accept("Pushing tags to FirebasePrivate/firebase-android-sdk ...");
-    String command = String.format("git push origin %s", tags);
-    executor.execute(command, handler);
-  }
+    public void tagProductVersion(String product, String version) {
+        String tag = product + "@" + version;
+        this.tag(tag);
+    }
 
-  private boolean onProw() {
-    return System.getenv().containsKey("FIREBASE_CI");
-  }
+    public void pushCreatedTags() {
+        if (!this.onProw() || newTags.isEmpty()) {
+            return;
+        }
 
-  private Consumer<List<String>> deriveGitCommandOutputHandlerFromLogger(Consumer<String> logger) {
-    return outputs -> outputs.stream().map(output -> "[git] " + output).forEach(logger);
-  }
+        List<String> copy = new ArrayList<>(newTags);
+        Collections.reverse(copy); // GitHub list tags in the reverse chronological order
+        StringJoiner joiner = new StringJoiner(" ");
+        copy.stream().map(x -> "refs/tags/" + x).forEach(joiner::add);
+        String tags = joiner.toString();
 
-  private void tag(String tag) {
-    logger.accept("Creating tag: " + tag);
-    newTags.add(tag);
-    String command = String.format("git tag %s %s", tag, rcCommit);
-    executor.execute(command, handler);
-  }
+        logger.accept("Tags to be pushed: " + tags);
 
-  private void showVersion() {
-    executor.execute("git --version", handler);
-  }
+        logger.accept("Pushing tags to FirebasePrivate/firebase-android-sdk ...");
+        String command = String.format("git push origin %s", tags);
+        executor.execute(command, handler);
+    }
 
-  private void configureRemoteRepo(String repo) {
-    String command = String.format("git remote add origin git@github.com:%s.git", repo);
-    executor.execute(command, handler);
-  }
+    private boolean onProw() {
+        return System.getenv().containsKey("FIREBASE_CI");
+    }
+
+    private Consumer<List<String>> deriveGitCommandOutputHandlerFromLogger(Consumer<String> logger) {
+        return outputs -> outputs.stream().map(output -> "[git] " + output).forEach(logger);
+    }
+
+    private void tag(String tag) {
+        logger.accept("Creating tag: " + tag);
+        newTags.add(tag);
+        String command = String.format("git tag %s %s", tag, rcCommit);
+        executor.execute(command, handler);
+    }
+
+    private void showVersion() {
+        executor.execute("git --version", handler);
+    }
+
+    private void configureRemoteRepo(String repo) {
+        String command = String.format("git remote add origin git@github.com:%s.git", repo);
+        executor.execute(command, handler);
+    }
 }

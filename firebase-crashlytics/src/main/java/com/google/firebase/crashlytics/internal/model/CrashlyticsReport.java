@@ -103,6 +103,9 @@ public abstract class CrashlyticsReport {
   @Nullable
   public abstract FilesPayload getNdkPayload();
 
+  @Nullable
+  public abstract ApplicationExitInfo getAppExitInfo();
+
   @NonNull
   protected abstract Builder toBuilder();
 
@@ -151,6 +154,11 @@ public abstract class CrashlyticsReport {
   @NonNull
   public CrashlyticsReport withNdkPayload(@NonNull FilesPayload filesPayload) {
     return toBuilder().setSession(null).setNdkPayload(filesPayload).build();
+  }
+
+  @NonNull
+  public CrashlyticsReport withApplicationExitInfo(ApplicationExitInfo appExitInfo) {
+    return appExitInfo == null ? this : toBuilder().setAppExitInfo(appExitInfo).build();
   }
 
   /**
@@ -1064,6 +1072,10 @@ public abstract class CrashlyticsReport {
     // Not all ApplicationExitInfos have a trace file.
     public abstract String getTraceFile();
 
+    @Nullable
+    // Not all ApplicationExitInfos have build id info
+    public abstract ImmutableList<BuildIdMappingForArch> getBuildIdMappingForArch();
+
     /** Builder for {@link ApplicationExitInfo}. */
     @AutoValue.Builder
     public abstract static class Builder {
@@ -1092,7 +1104,45 @@ public abstract class CrashlyticsReport {
       public abstract ApplicationExitInfo.Builder setTraceFile(@Nullable String value);
 
       @NonNull
+      public abstract ApplicationExitInfo.Builder setBuildIdMappingForArch(
+          @Nullable ImmutableList<BuildIdMappingForArch> value);
+
+      @NonNull
       public abstract ApplicationExitInfo build();
+    }
+
+    @AutoValue
+    public abstract static class BuildIdMappingForArch {
+
+      @NonNull
+      public static BuildIdMappingForArch.Builder builder() {
+        return new AutoValue_CrashlyticsReport_ApplicationExitInfo_BuildIdMappingForArch.Builder();
+      }
+
+      @NonNull
+      public abstract String getArch();
+
+      @NonNull
+      public abstract String getLibraryName();
+
+      @NonNull
+      public abstract String getBuildId();
+
+      @AutoValue.Builder
+      public abstract static class Builder {
+
+        @NonNull
+        public abstract Builder setArch(@NonNull String value);
+
+        @NonNull
+        public abstract Builder setLibraryName(@NonNull String value);
+
+        @NonNull
+        public abstract Builder setBuildId(@NonNull String value);
+
+        @NonNull
+        public abstract BuildIdMappingForArch build();
+      }
     }
   }
 
@@ -1122,6 +1172,9 @@ public abstract class CrashlyticsReport {
 
     @NonNull
     public abstract Builder setNdkPayload(FilesPayload value);
+
+    @NonNull
+    public abstract Builder setAppExitInfo(ApplicationExitInfo applicationExitInfo);
 
     @NonNull
     public abstract CrashlyticsReport build();

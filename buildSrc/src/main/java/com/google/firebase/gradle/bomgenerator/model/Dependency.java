@@ -19,30 +19,30 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class Dependency {
 
-  public abstract String groupId();
+    public abstract String groupId();
 
-  public abstract String artifactId();
+    public abstract String artifactId();
 
-  public abstract String version();
+    public abstract String version();
 
-  public abstract VersionBump versionBump();
+    public abstract VersionBump versionBump();
 
-  public static Dependency create(
-      String groupId, String artifactId, String version, VersionBump versionBump) {
-    return new AutoValue_Dependency(groupId, artifactId, version, versionBump);
-  }
+    public static Dependency create(
+            String groupId, String artifactId, String version, VersionBump versionBump) {
+        return new AutoValue_Dependency(groupId, artifactId, version, versionBump);
+    }
 
-  // Null safe default constructor. Represents dependencies that have not yet been looked up in
-  // repos.
-  public static Dependency create(String groupId, String artifactId) {
-    return new AutoValue_Dependency(groupId, artifactId, "0.0.0", VersionBump.NONE);
-  }
+    // Null safe default constructor. Represents dependencies that have not yet been looked up in
+    // repos.
+    public static Dependency create(String groupId, String artifactId) {
+        return new AutoValue_Dependency(groupId, artifactId, "0.0.0", VersionBump.NONE);
+    }
 
-  public String fullArtifactId() {
-    return groupId() + ":" + artifactId();
-  }
+    public String fullArtifactId() {
+        return groupId() + ":" + artifactId();
+    }
 
-  public String toGradleString() {
-    return groupId() + ":" + artifactId() + (version() == null ? "" : (":" + version()));
-  }
+    public String toGradleString() {
+        return groupId() + ":" + artifactId() + (version() == null ? "" : (":" + version()));
+    }
 }

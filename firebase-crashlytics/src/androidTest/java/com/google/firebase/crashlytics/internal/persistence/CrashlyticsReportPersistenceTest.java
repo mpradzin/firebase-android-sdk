@@ -56,7 +56,7 @@ public class CrashlyticsReportPersistenceTest extends CrashlyticsTestCase {
     Settings.SessionData sessionData =
         new Settings.SessionData(maxCustomExceptionEvents, maxCompleteSessionsCount);
     Settings settings =
-        new Settings(0, sessionData, new FeatureFlagData(true, false), 3, 0, 1.0, 1.0, 1);
+        new Settings(0, sessionData, new FeatureFlagData(true, false, false), 3, 0, 1.0, 1.0, 1);
 
     when(settingsProvider.getSettingsSync()).thenReturn(settings);
     return settingsProvider;
@@ -293,9 +293,9 @@ public class CrashlyticsReportPersistenceTest extends CrashlyticsTestCase {
     Settings.SessionData sessionData2 = new Settings.SessionData(VERY_LARGE_UPPER_LIMIT, 8);
 
     Settings settings1 =
-        new Settings(0, sessionData1, new FeatureFlagData(true, true), 3, 0, 1.0, 1.0, 1);
+        new Settings(0, sessionData1, new FeatureFlagData(true, true, false), 3, 0, 1.0, 1.0, 1);
     Settings settings2 =
-        new Settings(0, sessionData2, new FeatureFlagData(true, true), 3, 0, 1.0, 1.0, 1);
+        new Settings(0, sessionData2, new FeatureFlagData(true, true, false), 3, 0, 1.0, 1.0, 1);
 
     when(settingsProvider.getSettingsSync()).thenReturn(settings1);
     reportPersistence = new CrashlyticsReportPersistence(fileStore, settingsProvider);
@@ -350,11 +350,11 @@ public class CrashlyticsReportPersistenceTest extends CrashlyticsTestCase {
             fileStore, createSettingsProviderMock(4, VERY_LARGE_UPPER_LIMIT));
 
     persistReportWithEvent(reportPersistence, "testSession1", true);
-    reportPersistence.finalizeSessionWithNativeEvent("testSession1", filesPayload);
+    reportPersistence.finalizeSessionWithNativeEvent("testSession1", filesPayload, null);
     persistReportWithEvent(reportPersistence, "testSession2low", false);
     persistReportWithEvent(reportPersistence, "testSession3low", false);
     persistReportWithEvent(reportPersistence, "testSession4", true);
-    reportPersistence.finalizeSessionWithNativeEvent("testSession4", filesPayload);
+    reportPersistence.finalizeSessionWithNativeEvent("testSession4", filesPayload, null);
     reportPersistence.finalizeReports("skippedSession", 0L);
 
     List<CrashlyticsReportWithSessionId> finalizedReports =
@@ -453,7 +453,7 @@ public class CrashlyticsReportPersistenceTest extends CrashlyticsTestCase {
 
     assertEquals(0, finalizedReports.size());
 
-    reportPersistence.finalizeSessionWithNativeEvent("sessionId", filesPayload);
+    reportPersistence.finalizeSessionWithNativeEvent("sessionId", filesPayload, null);
 
     finalizedReports = reportPersistence.loadFinalizedReports();
     assertEquals(1, finalizedReports.size());
@@ -558,9 +558,9 @@ public class CrashlyticsReportPersistenceTest extends CrashlyticsTestCase {
     Settings.SessionData sessionData2 = new Settings.SessionData(8, VERY_LARGE_UPPER_LIMIT);
 
     Settings settings1 =
-        new Settings(0, sessionData1, new FeatureFlagData(true, true), 3, 0, 1.0, 1.0, 1);
+        new Settings(0, sessionData1, new FeatureFlagData(true, true, false), 3, 0, 1.0, 1.0, 1);
     Settings settings2 =
-        new Settings(0, sessionData2, new FeatureFlagData(true, true), 3, 0, 1.0, 1.0, 1);
+        new Settings(0, sessionData2, new FeatureFlagData(true, true, false), 3, 0, 1.0, 1.0, 1);
 
     when(settingsProvider.getSettingsSync()).thenReturn(settings1);
     reportPersistence = new CrashlyticsReportPersistence(fileStore, settingsProvider);

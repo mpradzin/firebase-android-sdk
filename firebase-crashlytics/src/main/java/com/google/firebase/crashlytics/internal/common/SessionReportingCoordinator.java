@@ -70,7 +70,8 @@ public class SessionReportingCoordinator implements CrashlyticsLifecycleEvents {
       SettingsProvider settingsProvider,
       OnDemandCounter onDemandCounter) {
     final CrashlyticsReportDataCapture dataCapture =
-        new CrashlyticsReportDataCapture(context, idManager, appData, stackTraceTrimmingStrategy);
+        new CrashlyticsReportDataCapture(
+            context, idManager, appData, stackTraceTrimmingStrategy, settingsProvider);
     final CrashlyticsReportPersistence reportPersistence =
         new CrashlyticsReportPersistence(fileStore, settingsProvider);
     final DataTransportCrashlyticsReportSender reportSender =
@@ -160,7 +161,9 @@ public class SessionReportingCoordinator implements CrashlyticsLifecycleEvents {
   }
 
   public void finalizeSessionWithNativeEvent(
-      @NonNull String sessionId, @NonNull List<NativeSessionFile> nativeSessionFiles) {
+      @NonNull String sessionId,
+      @NonNull List<NativeSessionFile> nativeSessionFiles,
+      CrashlyticsReport.ApplicationExitInfo applicationExitInfo) {
 
     Logger.getLogger().d("SessionReportingCoordinator#finalizeSessionWithNativeEvent");
 
@@ -173,7 +176,9 @@ public class SessionReportingCoordinator implements CrashlyticsLifecycleEvents {
     }
 
     reportPersistence.finalizeSessionWithNativeEvent(
-        sessionId, FilesPayload.builder().setFiles(ImmutableList.from(nativeFiles)).build());
+        sessionId,
+        FilesPayload.builder().setFiles(ImmutableList.from(nativeFiles)).build(),
+        applicationExitInfo);
   }
 
   /**
